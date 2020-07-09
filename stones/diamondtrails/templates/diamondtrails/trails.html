@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+</head>
+
+<body>
+    <h1>DISCOVER TRAILS </h1>
+    
+
+    {% for trail in trails_data.trails %}
+    <div class="box">
+        <article class="media">
+            <div class="media-left">
+                <figure class="image is-50x50">
+                    <img src={{ trail.imgSmall }} alt="Image">
+                </figure>
+            </div>
+            <div class="media-content">
+                <div class="content">
+                    <p>
+                        <span class="title">{{ trail.name }}</span>
+                        <br>
+                        <span class="subtitle">{{ trail.location }}</span>
+                        <br> {{ trail.summary }}
+                        <br> {{ trail.length }} mi
+                        <br> Lon: {{ trail.longitude }}  Lat: {{ trail.latitude }}
+                    
+                        <br> Updated Status ( {{ trail.conditionDate }} ) : {{ trail.conditionStatus }} / {{ trail.conditionDetails }}
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+    </div>
+    {% endfor %}
+
+
+</body>
+
+</html>
