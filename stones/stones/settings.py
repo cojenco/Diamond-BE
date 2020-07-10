@@ -38,8 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'diamondtrails',
-    # 'diamondtrails.apps.DiamondtrailsConfig',
+    # 'diamondtrails',
+    'diamondtrails.apps.DiamondtrailsConfig',
+    'rest_framework',
 ]
 
 AUTH_USER_MODEL = 'diamondtrails.User'
