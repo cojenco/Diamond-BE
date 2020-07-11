@@ -53,10 +53,8 @@ def trailDetail(request, external_id):
       r = requests.get(url, params=payload).json()
       print(r)
 
-      # context = {'trails_data': r}
-      # print(r.json())
-      # return HttpResponse("Hello, world. This is diamond3trails")
       return Response(r)
+
 
 @api_view(['GET'])
 def allTrails(request):
@@ -72,7 +70,6 @@ def allTrails(request):
 
     external_results = requests.get(url, params=payload).json()
     print(external_results)
+    print('YAY! Successfully called Django API')
 
-    return Response(external_results)
-
-    
+    return Response(external_results)    
