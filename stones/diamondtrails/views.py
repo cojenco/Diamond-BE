@@ -47,7 +47,7 @@ def trailDetail(request, external_id):
 
       payload = {
           'key': secrets.HP_API_KEY,
-          'id': external_id,
+          'ids': external_id,
       }
 
       r = requests.get(url, params=payload).json()
