@@ -47,11 +47,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_absolute_url(self):
         return "/users/%i/" % (self.pk)
 
+
 class StatusUpdate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=100)
     message = models.CharField(max_length=200)
     external_id = models.BigIntegerField()
+
+
+class Subscription(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    external_id = models.BigIntegerField()
+    phone = models.CharField(max_length = 15)
 
     
