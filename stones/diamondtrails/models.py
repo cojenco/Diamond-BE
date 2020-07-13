@@ -62,4 +62,10 @@ class Subscription(models.Model):
     external_id = models.BigIntegerField()
     phone = models.CharField(max_length = 15)
 
+
+class USstate(models.Model):
+    name = models.CharField(max_length=100)
+    abbr = models.CharField(max_length=2)
+    lat = models.DecimalField(max_digits=22, decimal_places=16)
+    lng = models.DecimalField(max_digits=22, decimal_places=16)
     

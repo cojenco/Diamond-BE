@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from stones import secrets
-from .models import StatusUpdate, Subscription
+from .models import StatusUpdate, Subscription, USstate
 import requests
 import datetime
 
@@ -95,12 +95,16 @@ def trailDetail(request, external_id):
 @api_view(['GET'])
 def allTrails(request, state_name):
   url = 'https://www.hikingproject.com/data/get-trails'
-  print()
+
+  state = USstate.objects.get(abbr=state_name)
+  print(state.abbr)
+  lat = state.lat
+  lng = state.lng
 
   payload = {
       'key': secrets.HP_API_KEY,
-      'lat': COORDINATES[state_name]['lat'],
-      'lon': COORDINATES[state_name]['lng'], 
+      'lat': lat,
+      'lon': lng, 
       'maxDistance': '200',
       'maxResults': '500',
   }
