@@ -53,6 +53,23 @@ def trailDetail(request, external_id):
       r = requests.get(url, params=payload).json()
       print(r)
 
+      r['updates'] = [
+        {
+          'category': 'parking',
+          'message': '100%',
+        },
+        {
+          'category': 'visitors',
+          'message': '0-5 people',
+        },
+        {
+          'category': 'weather',
+          'message': 'hail',
+        }
+      ]
+
+      print(r)
+
       return Response(r)
 
 
@@ -94,6 +111,30 @@ COORDINATES = {
     'lng' : -107.290284,
   },
 }
+
+####### Quick Easy SMS ##########
+# import requests
+
+# url = "https://quick-easy-sms.p.rapidapi.com/send"
+
+# payload = "ipnUrl=https%3A%2F%2Fexample.com%2Fabcd&message=message%20content%20from%20RapidAPI&toNumber=1xxxxxxxxxx"
+# headers = {
+#     'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
+#     'x-rapidapi-key': "4d112384e9msh3c6d3fb7238549fp126b15jsncd90b141438f",
+#     'content-type': "application/x-www-form-urlencoded"
+#     }
+
+# response = requests.request("POST", url, data=payload, headers=headers)
+
+# print(response.text)
+
+######payload includes required fields: message and toNumber
+
+
+#############################
+
+
+
 
 # @api_view(['GET'])
 # def allTrails(request):

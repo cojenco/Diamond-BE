@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'diamondtrails',
     'diamondtrails.apps.DiamondtrailsConfig',
     'rest_framework',
     'corsheaders',
