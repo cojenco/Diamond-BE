@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from stones import secrets
-from .models import StatusUpdate
+from .models import StatusUpdate, Subscription
 import requests
+import datetime
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -104,6 +105,8 @@ def liveUpdate(request, external_id):
 
   category = request.data["category"]
   message = request.data["message"]
+  current_time = datetime.datetime.now()
+  now = str(current_time)
 
   new_status = StatusUpdate(
   external_id = external_id,
@@ -113,13 +116,54 @@ def liveUpdate(request, external_id):
 
   # new_status.save()
 
-  print(new_status)
-  print(new_status.external_id)
-
   # also filter Subscriptions with that trail (external_id == external_id)
   # make API request to send out SMS
+  subs = Subscription.objects.filter(external_id = external_id)
+  print('Looking for subscribers')
+
+  for sub in subs:
+    print(sub.phone)
+    phone = sub.phone
+    content = "TRAIL MIX LIVE! " + category + ": " + message + ". Last updated: " + now
+    url = "https://quick-easy-sms.p.rapidapi.com/send"
+
+    payload = {
+      'message': content,
+      'toNumber': phone,
+    }
+
+    headers = {
+        'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
+        'x-rapidapi-key': secrets.SMS_KEY,
+        'content-type': "application/x-www-form-urlencoded"
+        }
+
+    sms_response = requests.post(url, params=payload, headers=headers)
+    print(sms_response.text)
+
+  return Response(request.data)
 
 
+@api_view(['POST'])
+def subscribe(request, external_id):
+  # create a StatusUpdate instance and save
+  print('Yay! Made it here!')
+  print(request.data)
+
+  phone = "1" + request.data["phone"]
+
+  new_sub = Subscription(
+  external_id = external_id,
+  phone = phone
+  )
+
+  new_sub.save()
+
+  print(new_sub)
+  print(new_sub.external_id)
+
+  # also filter StatusUpdates with that trail (external_id == external_id)
+  # make API request to send out SMS with last status update
   return Response(request.data)
 
 COORDINATES = {
