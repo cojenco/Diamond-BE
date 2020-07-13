@@ -69,3 +69,5 @@ class USstate(models.Model):
     lat = models.DecimalField(max_digits=22, decimal_places=16)
     lng = models.DecimalField(max_digits=22, decimal_places=16)
     
+    def __str__(self):
+        return self.abbr
