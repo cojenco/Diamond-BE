@@ -55,7 +55,22 @@ def trailDetail(request, external_id):
   }
 
   r = requests.get(url, params=payload).json()
-  print(r)
+
+  subs = Subscription.objects.filter(external_id = external_id).count()
+  # parking_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'weather').order_by('-created_at').json()
+  # print('PARKING')
+  # print(parking_updates)
+  # print(parking_updates.count())
+
+  # for update in parking_updates:
+  #   print(update.category)
+  #   print(update.message)
+  #   print(update.created_at)
+
+  # r['weather_updates'] = parking_updates
+
+  r['subscriptions'] = subs
+  
 
   r['updates'] = [
     {
@@ -123,23 +138,23 @@ def liveUpdate(request, external_id):
 
   for sub in subs:
     print(sub.phone)
-    phone = sub.phone
-    content = "TRAIL MIX LIVE! " + category + ": " + message + ". Last updated: " + now
-    url = "https://quick-easy-sms.p.rapidapi.com/send"
+    # phone = sub.phone
+    # content = "TRAIL MIX LIVE! " + category + ": " + message + ". Last updated: " + now
+    # url = "https://quick-easy-sms.p.rapidapi.com/send"
 
-    payload = {
-      'message': content,
-      'toNumber': phone,
-    }
+    # payload = {
+    #   'message': content,
+    #   'toNumber': phone,
+    # }
 
-    headers = {
-        'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
-        'x-rapidapi-key': secrets.SMS_KEY,
-        'content-type': "application/x-www-form-urlencoded"
-        }
+    # headers = {
+    #     'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
+    #     'x-rapidapi-key': secrets.SMS_KEY,
+    #     'content-type': "application/x-www-form-urlencoded"
+    #     }
 
-    sms_response = requests.post(url, params=payload, headers=headers)
-    print(sms_response.text)
+    # sms_response = requests.post(url, params=payload, headers=headers)
+    # print(sms_response.text)
 
   return Response(request.data)
 
