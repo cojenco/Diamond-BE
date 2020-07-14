@@ -38,15 +38,15 @@ def trailDetail(request, external_id):
   ### YET: FILTER CREATED AT WITHIN 72 HOURS
   subs = Subscription.objects.filter(external_id = external_id).count()
   # Filter DB to get weather udpates
-  weather_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'weather').order_by('-created_at')
+  weather_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'Weather').order_by('-created_at')
   weather_serializers = UpdateSerializer(weather_updates, many=True)
   weather_stats = weather_serializers.data[:]
   # Filter DB to get parking udpates
-  parking_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'parking').order_by('-created_at')
+  parking_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'Parking').order_by('-created_at')
   parking_serializers = UpdateSerializer(parking_updates, many=True)
   parking_stats = parking_serializers.data[:]
   # Filter DB to get visitor udpates
-  visitor_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'visitor').order_by('-created_at')
+  visitor_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'Visitor').order_by('-created_at')
   visitor_serializers = UpdateSerializer(visitor_updates, many=True)
   visitor_stats = visitor_serializers.data[:]
 
@@ -128,6 +128,7 @@ def liveUpdate(request, external_id):
   # Filter DB: Subscriptions with that trail (external_id == external_id)
   # YET TO DO: FILTER SUBSCRIBERS FOR THE LAST 72 HOURS
   # make API request to send out SMS
+  # should also send out Trail name 
   subs = Subscription.objects.filter(external_id = external_id)
   print('Looking for subscribers')
 
