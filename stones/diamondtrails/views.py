@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from stones import secrets
 from .models import StatusUpdate, Subscription, USstate
+from .serializers import UpdateSerializer
 import requests
 import datetime
 
@@ -57,35 +58,37 @@ def trailDetail(request, external_id):
   r = requests.get(url, params=payload).json()
 
   subs = Subscription.objects.filter(external_id = external_id).count()
-  # parking_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'weather').order_by('-created_at').json()
-  # print('PARKING')
-  # print(parking_updates)
-  # print(parking_updates.count())
 
-  # for update in parking_updates:
-  #   print(update.category)
-  #   print(update.message)
-  #   print(update.created_at)
+  weather_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'weather').order_by('-created_at')
+  weather_serializers = UpdateSerializer(weather_updates, many=True)
+  weather_stats = weather_serializers.data[:]
+  for update in weather_stats:
+    print(update['category'])
+    print(update['message'])
+    print(update['created_at'])
 
-  # r['weather_updates'] = parking_updates
+  # print(weather_stats.data)
+  # print(weather_stats.data[0]['message'])
+
+  r['weather_updates'] = weather_stats
 
   r['subscriptions'] = subs
   
 
-  r['updates'] = [
-    {
-      'category': 'parking',
-      'message': '100%',
-    },
-    {
-      'category': 'visitors',
-      'message': '0-5 people',
-    },
-    {
-      'category': 'weather',
-      'message': 'hail',
-    }
-  ]
+  # r['updates'] = [
+  #   {
+  #     'category': 'parking',
+  #     'message': '100%',
+  #   },
+  #   {
+  #     'category': 'visitors',
+  #     'message': '0-5 people',
+  #   },
+  #   {
+  #     'category': 'weather',
+  #     'message': 'hail',
+  #   }
+  # ]
 
   print(r)
 
