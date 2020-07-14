@@ -11,29 +11,6 @@ from rest_framework.response import Response
 
 # Create your views here.
 
-# def index(request):
-#     return HttpResponse("Hello, world. This is diamond3trails")
-
-# def index(request):
-#     url = 'https://www.hikingproject.com/data/get-trails'
-
-#     payload = {
-#         'key': secrets.HP_API_KEY,
-#         'lat': '47.62',
-#         'lon': '-122.19', 
-#         'maxDistance': '20',
-#         'maxResults': '500',
-#     }
-
-#     r = requests.get(url, params=payload).json()
-#     # print(r)
-
-#     context = {'trails_data': r}
-#     # print(r.json())
-#     # return HttpResponse("Hello, world. This is diamond3trails")
-#     return render(request, 'diamondtrails/trails.html', context)
-
-
 @api_view(['GET'])
 def apiOverview(request):
   api_urls = {
@@ -57,23 +34,34 @@ def trailDetail(request, external_id):
 
   r = requests.get(url, params=payload).json()
 
+  # Filter DB to get subscribers 
+  ### YET: FILTER CREATED AT WITHIN 72 HOURS
   subs = Subscription.objects.filter(external_id = external_id).count()
-
+  # Filter DB to get weather udpates
   weather_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'weather').order_by('-created_at')
   weather_serializers = UpdateSerializer(weather_updates, many=True)
   weather_stats = weather_serializers.data[:]
-  for update in weather_stats:
-    print(update['category'])
-    print(update['message'])
-    print(update['created_at'])
+  # Filter DB to get parking udpates
+  parking_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'parking').order_by('-created_at')
+  parking_serializers = UpdateSerializer(parking_updates, many=True)
+  parking_stats = parking_serializers.data[:]
+  # Filter DB to get visitor udpates
+  visitor_updates = StatusUpdate.objects.filter(external_id = external_id, category = 'visitor').order_by('-created_at')
+  visitor_serializers = UpdateSerializer(visitor_updates, many=True)
+  visitor_stats = visitor_serializers.data[:]
 
-  # print(weather_stats.data)
-  # print(weather_stats.data[0]['message'])
-
-  r['weather_updates'] = weather_stats
-
+  # Add data to the json response
   r['subscriptions'] = subs
-  
+  r['weather_updates'] = weather_stats
+  r['parking_updates'] = parking_stats
+  r['visitor_updates'] = visitor_stats
+
+
+  # for update in weather_stats:
+  #   print(update['category'])
+  #   print(update['message'])
+  #   print(update['created_at'])
+
 
   # r['updates'] = [
   #   {
@@ -113,7 +101,6 @@ def allTrails(request, state_name):
   }
 
   external_results = requests.get(url, params=payload).json()
-  # print(external_results)
   print('YAY! Successfully called Django API')
 
   return Response(external_results)    
@@ -138,13 +125,15 @@ def liveUpdate(request, external_id):
 
   # new_status.save()
 
-  # also filter Subscriptions with that trail (external_id == external_id)
+  # Filter DB: Subscriptions with that trail (external_id == external_id)
+  # YET TO DO: FILTER SUBSCRIBERS FOR THE LAST 72 HOURS
   # make API request to send out SMS
   subs = Subscription.objects.filter(external_id = external_id)
   print('Looking for subscribers')
 
   for sub in subs:
     print(sub.phone)
+    # IMPORTANT DO NOT DELETE
     # phone = sub.phone
     # content = "TRAIL MIX LIVE! " + category + ": " + message + ". Last updated: " + now
     # url = "https://quick-easy-sms.p.rapidapi.com/send"
@@ -162,6 +151,7 @@ def liveUpdate(request, external_id):
 
     # sms_response = requests.post(url, params=payload, headers=headers)
     # print(sms_response.text)
+    # IMPORTANT DO NOT DELETE
 
   return Response(request.data)
 
@@ -188,24 +178,7 @@ def subscribe(request, external_id):
   # make API request to send out SMS with last status update
   return Response(request.data)
 
-COORDINATES = {
-  'WA' : {
-    'lat' : 47.751074,
-    'lng' : -120.740139,
-  },
-  'WI' : {
-    'lat' : 43.78444,
-    'lng' : -88.787868,
-  },
-  'WV' : {
-    'lat' : 38.597626,
-    'lng' : -80.454903,
-  },
-  'WY' : {
-    'lat' : 43.075968,
-    'lng' : -107.290284,
-  },
-}
+
 
 ####### Quick Easy SMS ##########
 # import requests
@@ -227,25 +200,3 @@ COORDINATES = {
 
 
 #############################
-
-
-
-
-# @api_view(['GET'])
-# def allTrails(request):
-#     url = 'https://www.hikingproject.com/data/get-trails'
-
-#     payload = {
-#         'key': secrets.HP_API_KEY,
-#         'lat': '47.62',
-#         'lon': '-122.19', 
-#         'maxDistance': '20',
-#         # 'maxResults': '500',
-#     }
-
-#     external_results = requests.get(url, params=payload).json()
-#     print(external_results)
-#     print('YAY! Successfully called Django API')
-
-#     return Response(external_results)    
-
