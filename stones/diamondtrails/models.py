@@ -61,6 +61,7 @@ class Subscription(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     external_id = models.BigIntegerField()
     phone = models.CharField(max_length = 15)
+    trail = models.CharField(max_length = 150)
 
 
 class USstate(models.Model):

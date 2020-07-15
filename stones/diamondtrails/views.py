@@ -163,11 +163,13 @@ def subscribe(request, external_id):
   print('Yay! Made it here!')
   print(request.data)
 
-  phone = "1" + request.data["phone"]
+  phone = "1" + request.data['phone']
+  trail = request.data['trail']
 
   new_sub = Subscription(
   external_id = external_id,
-  phone = phone
+  phone = phone,
+  trail = trail
   )
 
   new_sub.save()
