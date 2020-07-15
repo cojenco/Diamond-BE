@@ -9,8 +9,8 @@ import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# Create your views here.
 
+##### Overview of Endpoints #####
 @api_view(['GET'])
 def apiOverview(request):
   api_urls = {
@@ -18,10 +18,13 @@ def apiOverview(request):
     'allTrails': 'all-trails/<str:state_name>',
     'trailDetail': 'trail/<str:external_id>/',
     'liveUpdate': 'trail/<str:external_id>/live-update',
+    'subscribe': 'trail/<str:external_id>/subscribe',
   }
 
   return Response(api_urls)
 
+
+##### SHOW: Get One Single Trail #####
 @api_view(['GET'])
 def trailDetail(request, external_id):
   url = 'https://www.hikingproject.com/data/get-trails-by-id'
@@ -56,33 +59,12 @@ def trailDetail(request, external_id):
   r['parking_updates'] = parking_stats
   r['visitor_updates'] = visitor_stats
 
-
-  # for update in weather_stats:
-  #   print(update['category'])
-  #   print(update['message'])
-  #   print(update['created_at'])
-
-
-  # r['updates'] = [
-  #   {
-  #     'category': 'parking',
-  #     'message': '100%',
-  #   },
-  #   {
-  #     'category': 'visitors',
-  #     'message': '0-5 people',
-  #   },
-  #   {
-  #     'category': 'weather',
-  #     'message': 'hail',
-  #   }
-  # ]
-
   print(r)
 
   return Response(r)
 
 
+##### INDEX: Retrieve initial 500 trails from coordinates #####
 @api_view(['GET'])
 def allTrails(request, state_name):
   url = 'https://www.hikingproject.com/data/get-trails'
@@ -106,6 +88,7 @@ def allTrails(request, state_name):
   return Response(external_results)    
 
 
+##### LiveUpdate: post a new status update #####
 @api_view(['POST'])
 def liveUpdate(request, external_id):
   # create a StatusUpdate instance and save
@@ -123,20 +106,21 @@ def liveUpdate(request, external_id):
   message = message 
   )
 
-  # new_status.save()
+  new_status.save()
 
   # Filter DB: Subscriptions with that trail (external_id == external_id)
   # YET TO DO: FILTER SUBSCRIBERS FOR THE LAST 72 HOURS
-  # make API request to send out SMS
-  # should also send out Trail name 
   subs = Subscription.objects.filter(external_id = external_id)
   print('Looking for subscribers')
 
+  # Send out text messages to alert subscribers
   for sub in subs:
     print(sub.phone)
+    print(sub.trail)
     # IMPORTANT DO NOT DELETE
     # phone = sub.phone
-    # content = "TRAIL MIX LIVE! " + category + ": " + message + ". Last updated: " + now
+    # trail = sub.trail
+    # content = "TRAIL MIX LIVE! " + category + ": " + message + ". Location: " + trail + ". Last updated: " + now
     # url = "https://quick-easy-sms.p.rapidapi.com/send"
 
     # payload = {
@@ -157,6 +141,7 @@ def liveUpdate(request, external_id):
   return Response(request.data)
 
 
+##### Subscribe: to subscribe to a trail #####
 @api_view(['POST'])
 def subscribe(request, external_id):
   # create a StatusUpdate instance and save
@@ -174,32 +159,4 @@ def subscribe(request, external_id):
 
   new_sub.save()
 
-  print(new_sub)
-  print(new_sub.external_id)
-
-  # also filter StatusUpdates with that trail (external_id == external_id)
-  # make API request to send out SMS with last status update
   return Response(request.data)
-
-
-
-####### Quick Easy SMS ##########
-# import requests
-
-# url = "https://quick-easy-sms.p.rapidapi.com/send"
-
-# payload = "ipnUrl=https%3A%2F%2Fexample.com%2Fabcd&message=message%20content%20from%20RapidAPI&toNumber=1xxxxxxxxxx"
-# headers = {
-#     'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
-#     'x-rapidapi-key': "4d112384e9msh3c6d3fb7238549fp126b15jsncd90b141438f",
-#     'content-type': "application/x-www-form-urlencoded"
-#     }
-
-# response = requests.request("POST", url, data=payload, headers=headers)
-
-# print(response.text)
-
-######payload includes required fields: message and toNumber
-
-
-#############################
